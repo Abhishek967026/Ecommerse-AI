@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ecommerce_postgres
+    environment:
+      POSTGRES_DB: ecommerce_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ecommerce_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Optional: pgAdmin for DB management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: ecommerce_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    profiles:
+      - tools  # Only starts with: docker-compose --profile tools up
+
+  # Optional: App container (or run locally with uvicorn)
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce_app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres:password@postgres:5432/agentic_ai_db
+      SYNC_DATABASE_URL: postgresql://postgres:password@postgres:5432/agentic_ai_db
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./chroma_db:/app/chroma_db
+    profiles:
+      - full  # Only starts with: docker-compose --profile full up
+
+volumes:
+  postgres_data:

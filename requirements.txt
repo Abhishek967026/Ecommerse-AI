@@ -1,0 +1,38 @@
+# Web Framework
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Database
+sqlalchemy
+asyncpg
+psycopg2-binary
+alembic
+
+# LangChain & LangGraph
+langchain
+langchain-core
+langchain-community
+langchain-openai
+langgraph
+langsmith
+
+# CrewAI
+crewai
+crewai-tools
+
+# Vector Store
+chromadb
+sentence-transformers
+
+# Langfuse Monitoring
+langfuse
+
+# Utilities
+python-dotenv
+pydantic
+pydantic-settings
+httpx
+aiofiles
+openai
+tiktoken
